@@ -63,27 +63,35 @@ class MyGoogleCalendar():
     Slack 送信するテキストを作成する
     """
     def create_text(self, name, formatted_events):
+        count = 0
         text = f'{self.config.slack_mentions[name]}\n'
 
         for event in formatted_events:
-            # 終日イベント: 時間指定がない
-            if re.match(r'^\d{4}-\d{2}-\d{2}$', event[0]):  # start
-                if self.is_all_day_notify:
-                    start_date = '{0:%Y-%m-%d}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%d'))  # end
-                    text += '{0} All Day\n{1}\n\n'.format(start_date, event[2])  # summary
-            # 時間指定のあるイベント
+            # 終日イベント
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', event[0]):
+                # 通知時間外
+                if not self.is_all_day_notify:
+                    continue
+
+                count += 1
+                start_date = '{0:%Y-%m-%d}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%d'))
+                text += '{0} All Day\n{1}\n\n'.format(start_date, event[2])
+            # 時間指定イベント
             else:
-                start_time = '{0:%Y-%m-%d %H:%M}'.format(datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))  # start
+                start_time = '{0:%Y-%m-%d %H:%M}'.format(datetime.datetime.strptime(event[0], '%Y-%m-%dT%H:%M:%S+09:00'))
 
                 # 一時間以内のイベントのみ取得する
-                # if self.get_diff_second(start_time) >= 3601:
-                #     continue
+                if self.get_diff_second(start_time) >= 3601:
+                    continue
 
-                end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%dT%H:%M:%S+09:00'))  # end
-                text += '{0} ~ {1}\n{2}\n'.format(start_time, end_time, event[2])  # summary
+                count += 1
+                end_time = '{0:%H:%M}'.format(datetime.datetime.strptime(event[1], '%Y-%m-%dT%H:%M:%S+09:00'))
+                text += '{0} ~ {1}\n{2}\n'.format(start_time, end_time, event[2])
 
-            text += f'{event[3]}\n\n'  # htmlLink
-            print(text)
+            text += f'{event[3]}\n\n'
+
+        if count == 0:
+            return None
 
         return text.rstrip('\n')
 

@@ -10,7 +10,7 @@ class GoogleCalendarNotificationForSlack:
             text = google_calendar.get_str_next_schedule(calendar_id, name)
 
             if text is not None:
-                # google_calendar.slack_post(text, 'Next Calendar TODO', ':calendar:', None)
+                google_calendar.slack_post(text, 'Next Calendar TODO', ':calendar:', None)
                 print('Slack Post About GoogleCalendar Done!')
 
 
