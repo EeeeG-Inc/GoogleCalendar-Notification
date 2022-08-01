@@ -9,9 +9,9 @@ on:
   # 2. GitHub 上の手動実行
   workflow_dispatch:
   # 3. crontab
-  schedule:
-    # 1 時間毎
-    - cron: "00 * * * *"
+  # schedule:
+  #   # 1 時間毎
+  #   - cron: "00 * * * *"
 
 jobs:
   google_calendar_notification_for_slack:

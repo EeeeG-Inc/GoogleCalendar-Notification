@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from google.auth import load_credentials_from_file
 from googleapiclient.discovery import build
-import json
 import os
 
 load_dotenv()
