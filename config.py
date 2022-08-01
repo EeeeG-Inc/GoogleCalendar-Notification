@@ -32,7 +32,7 @@ class Config():
         }
 
         # credential.json の作成
-        with open('credential.json', 'w') as file:
+        with open(self.SERVICE_ACCOUNT_JSON_KEY_FILE, 'w') as file:
             count = 1
             stop = len(credential)
             file.write('{' + '\n')
@@ -44,14 +44,14 @@ class Config():
                 count += 1
             file.write('}' + '\n')
 
+        self.google_api_client = build('calendar', 'v3', credentials=load_credentials_from_file(self.SERVICE_ACCOUNT_JSON_KEY_FILE, [
+            'https://www.googleapis.com/auth/calendar.readonly'
+        ])[0])
+
         self.webhook_urls = {
             'default': os.getenv('WEBHOOK_URL_DEFAULT'),
             'google_calendar_todo_notification': os.getenv('WEBHOOK_URL_GOOGLE_CALENDAR_TODO_NOTIFICATION'),
         }
-
-        self.google_api_client = build('calendar', 'v3', credentials=load_credentials_from_file(self.SERVICE_ACCOUNT_JSON_KEY_FILE, [
-            'https://www.googleapis.com/auth/calendar.readonly'
-        ])[0])
 
         self.calendar_ids = {
             self.EMPLOYEE_1: os.getenv('CALENDAR_ID'),
